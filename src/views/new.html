@@ -41,14 +41,38 @@
                     <div class="new-task-table" ng-if="context.taskType === 'urls'">
                         <div class="row">
                             <div class="col-sm-12">
+                                <label>
+                                    <input ng-model="context.type" value="Bulk Download" type="radio" name="search-type">
+                                    Bulk Download
+                                </label>
+                                <label>
+                                    <input ng-model="context.type" value="Single Download" type="radio" name="search-type">
+                                    Single Download
+                                </label>
                                 <p ng-bind="'format.task.new.download-links' | translate: {count: getValidUrlsCount()}">Download Links:</p>
-                                <div class="form-group has-feedback no-margin" ng-class="{ 'has-error' : newTaskForm.urls.$invalid && newTaskForm.urls.$dirty, 'has-success' : newTaskForm.urls.$valid && newTaskForm.urls.$dirty }">
-                                    <textarea name="urls" class="form-control" rows="10" autofocus="autofocus" ng-auto-focus ng-valid-urls
+                                <div  ng-if="context.type === 'Bulk Download'" class="form-group has-feedback no-margin" ng-class="{ 'has-error' : newTaskForm.urls.$invalid && newTaskForm.urls.$dirty, 'has-success' : newTaskForm.urls.$valid && newTaskForm.urls.$dirty }">
+                                    <textarea name="urls"class="form-control" rows="10" autofocus="autofocus" ng-auto-focus ng-valid-urls
                                               ng-model="context.urls" ng-required="true" ng-keydown="urlTextboxKeyDown($event)"
                                               ng-placeholder="'Support multiple URLs, one URL per line.' | translate"></textarea>
                                     <div class="form-control-icon" ng-if="newTaskForm.urls.$dirty">
                                         <i class="fa form-control-feedback" ng-class="{'fa-check':newTaskForm.urls.$valid, 'fa-times':newTaskForm.urls.$invalid}"></i>
                                     </div>
+                                </div>
+								<div ng-if="context.type === 'Single Download'">
+									<div class="form-group has-feedback no-margin" ng-class="{ 'has-error' : newTaskForm.urls.$invalid && newTaskForm.urls.$dirty, 'has-success' : newTaskForm.urls.$valid && newTaskForm.urls.$dirty }">
+										<input name="urls" class="form-control" autofocus="autofocus" ng-auto-focus ng-valid-urls
+											   ng-model="context.urls" ng-required="true" ng-keydown="urlTextboxKeyDown($event)"
+											   ng-placeholder="'One url.' | translate" />
+										<div class="form-control-icon" ng-if="newTaskForm.urls.$dirty">
+											<i class="fa form-control-feedback" ng-class="{'fa-check':newTaskForm.urls.$valid, 'fa-times':newTaskForm.urls.$invalid}"></i>
+										</div>
+										<div class="settings-table striped hoverable">
+											<ng-setting ng-repeat="option in context.singleOptions"
+														option="option" lazy-save-timeout="0" default-value="context.globalOptions[option.key]"
+														on-change-value="setOption(key, value, optionStatus)">
+											</ng-setting>
+										</div>
+									</div>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +108,7 @@
                                 </div>
                             </div>
                         </div>
-                        <ng-setting ng-repeat="option in context.availableOptions" ng-if="context.optionFilter[option.category]"
+                        <ng-setting ng-repeat="option in context.availableOptions" ng-if="context.optionFilter[option.category] && !context.singleOptions[option.key]"
                                     option="option" lazy-save-timeout="0" default-value="context.globalOptions[option.key]"
                                     on-change-value="setOption(key, value, optionStatus)"></ng-setting>
                     </div>

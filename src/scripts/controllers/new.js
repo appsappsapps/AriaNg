@@ -59,10 +59,28 @@
         $scope.context = {
             currentTab: 'links',
             taskType: 'urls',
+            type: "Single Download",
             urls: '',
             uploadFile: null,
             availableOptions: (function () {
                 var keys = aria2SettingService.getNewTaskOptionKeys();
+
+                return aria2SettingService.getSpecifiedOptions(keys, {
+                    disableRequired: true
+                });
+            })(),
+            singleOptions: (function () {
+                var keys = [{
+                    key: 'dir',
+                    category: 'global',
+                    canUpdate: 'new',
+                    showHistory: true
+                },
+                {
+                    key: 'out',
+                    category: 'http',
+                    canUpdate: 'new'
+                }];
 
                 return aria2SettingService.getSpecifiedOptions(keys, {
                     disableRequired: true
