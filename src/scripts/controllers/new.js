@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    angular.module('ariaNg').controller('NewTaskController', ['$rootScope', '$scope', '$location', '$timeout', 'ariaNgCommonService', 'ariaNgLocalizationService', 'ariaNgLogService', 'ariaNgFileService', 'ariaNgSettingService', 'aria2TaskService', 'aria2SettingService', function ($rootScope, $scope, $location, $timeout, ariaNgCommonService, ariaNgLocalizationService, ariaNgLogService, ariaNgFileService, ariaNgSettingService, aria2TaskService, aria2SettingService) {
+    angular.module('ariaNg').controller('NewTaskController', ['$rootScope', '$scope', '$location', '$timeout', 'ariaNgCommonService', 'ariaNgLocalizationService', 'ariaNgLogService', 'ariaNgFileService', 'ariaNgSettingService', 'aria2TaskService', 'aria2SettingService', 'ariaNgConstants', function ($rootScope, $scope, $location, $timeout, ariaNgCommonService, ariaNgLocalizationService, ariaNgLogService, ariaNgFileService, ariaNgSettingService, aria2TaskService, aria2SettingService, ariaNgConstants) {
         var tabOrders = ['links', 'options'];
         var parameters = $location.search();
 
@@ -69,11 +69,30 @@
                     disableRequired: true
                 });
             })(),
+            destination: "Default",
+            downloadDestinations: (function() {
+                var keys = ariaNgConstants.downloadDestinations;
+                return keys;
+            })(),
+            bulkOptions:(function () {
+                var keys = [{
+                    key: 'dir',
+                    category: 'global',
+                    canUpdate: 'new',
+                    readonly: $scope.readonly,
+                    showHistory: true
+                }];
+
+                return aria2SettingService.getSpecifiedOptions(keys, {
+                    disableRequired: true
+                });
+            })(),
             singleOptions: (function () {
                 var keys = [{
                     key: 'dir',
                     category: 'global',
                     canUpdate: 'new',
+                    readonly: $scope.readonly,
                     showHistory: true
                 },
                 {
@@ -86,7 +105,7 @@
                     disableRequired: true
                 });
             })(),
-            globalOptions: null,
+            globalOptions: {},
             options: {},
             optionFilter: {
                 global: true,
@@ -102,6 +121,29 @@
                 ariaNgLogService.error('[NewTaskController] base64 decode error, url=' + parameters.url, ex);
             }
         }
+
+        $scope.destinationChange = function () {
+            var downloadDestinations = ariaNgConstants.downloadDestinations;
+            console.info($scope.context.destination, $scope.context.options.dir);
+            if($scope.context.destination === "Default") {
+                $scope.context.options.dir = "";
+                return;
+            }
+
+            if($scope.context.destination === "Custom"){
+                $scope.readonly = true;
+                return;
+            }
+
+            for(var i = 0; i < downloadDestinations.length; i++) {
+                var destination = downloadDestinations[i];
+                if($scope.context.destination === destination.displayName){
+                    $scope.context.options.dir = destination.path;
+                    break;
+                }
+            }
+
+        };
 
         $scope.changeTab = function (tabName) {
             if (tabName === 'options') {

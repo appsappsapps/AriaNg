@@ -57,6 +57,23 @@
                                     <div class="form-control-icon" ng-if="newTaskForm.urls.$dirty">
                                         <i class="fa form-control-feedback" ng-class="{'fa-check':newTaskForm.urls.$valid, 'fa-times':newTaskForm.urls.$invalid}"></i>
                                     </div>
+                                    <label>
+                                        <input name="destination-type" value="Default" ng-model="context.destination" ng-change="destinationChange()" type="radio">
+                                        Default
+                                    </label>
+                                    <label ng-repeat="destination in context.downloadDestinations">
+                                        <input name="destination-type" value="{{destination.displayName}}" ng-model="context.destination" ng-change="destinationChange()" type="radio">
+                                        {{destination.displayName}}
+                                    </label>
+                                    <label>
+                                        <input name="destination-type" value="Custom" ng-model="context.destination" ng-change="destinationChange()" type="radio">
+                                        Custom
+                                    </label>
+                                    <ng-setting ng-repeat="option in context.bulkOptions"
+                                                ng-if="!(context.destination !== 'Custom' && option.key === 'dir')"
+                                                option="option" lazy-save-timeout="0" default-value="context.globalOptions[option.key]"
+                                                on-change-value="setOption(key, value, optionStatus)">
+                                    </ng-setting>
                                 </div>
 								<div ng-if="context.type === 'Single Download'">
 									<div class="form-group has-feedback no-margin" ng-class="{ 'has-error' : newTaskForm.urls.$invalid && newTaskForm.urls.$dirty, 'has-success' : newTaskForm.urls.$valid && newTaskForm.urls.$dirty }">
@@ -67,11 +84,24 @@
 											<i class="fa form-control-feedback" ng-class="{'fa-check':newTaskForm.urls.$valid, 'fa-times':newTaskForm.urls.$invalid}"></i>
 										</div>
 										<div class="settings-table striped hoverable">
-											<ng-setting ng-repeat="option in context.singleOptions"
-														option="option" lazy-save-timeout="0" default-value="context.globalOptions[option.key]"
-														on-change-value="setOption(key, value, optionStatus)">
-											</ng-setting>
-										</div>
+											<label>
+                                                <input name="destination-type" value="Default" ng-model="context.destination" ng-change="destinationChange()" type="radio">
+                                                Default
+                                            </label>
+                                            <label ng-repeat="destination in context.downloadDestinations">
+                                                <input name="destination-type" value="{{destination.displayName}}" ng-model="context.destination" ng-change="destinationChange()" type="radio">
+                                                {{destination.displayName}}
+                                            </label>
+                                            <label>
+                                                <input name="destination-type" value="Custom" ng-model="context.destination" ng-change="destinationChange()" type="radio">
+                                                Custom
+                                            </label>
+                                            <ng-setting ng-repeat="option in context.singleOptions"
+                                                        ng-if="!(context.destination !== 'Custom' && option.key === 'dir')"
+                                                        option="option" lazy-save-timeout="0" default-value="context.globalOptions[option.key]"
+                                                        on-change-value="setOption(key, value, optionStatus)">
+                                            </ng-setting>
+                                        </div>
 									</div>
                                 </div>
                             </div>

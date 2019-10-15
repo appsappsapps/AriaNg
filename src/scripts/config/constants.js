@@ -20,7 +20,21 @@
         errorTooltipDelay: 500,
         notificationInPageTimeout: 2000,
         historyMaxStoreCount: 10,
-        cachedDebugLogsLimit: 100
+        cachedDebugLogsLimit: 100,
+        downloadDestinations: [
+            {
+              displayName: 'Documents',
+              path: '/mnt/drive1/path/to/doc'
+            },
+            {
+              displayName: 'Quire',
+              path: '/mnt/drive2/path/to/q'
+            },
+            {
+                displayName: 'Your_folder',
+                path: 'Your_folder'
+            },
+        ]
     }).constant('ariaNgDefaultOptions', {
         language: 'en',
         title: '${downspeed}, ${upspeed} - ${title}',
