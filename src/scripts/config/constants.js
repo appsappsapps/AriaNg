@@ -21,6 +21,7 @@
         notificationInPageTimeout: 2000,
         historyMaxStoreCount: 10,
         cachedDebugLogsLimit: 100,
+        youtubeLocalhost: 'http://localhost:3000',
         downloadDestinations: [
             {
               displayName: 'Documents',

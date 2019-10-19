@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    angular.module('ariaNg').controller('NewTaskController', ['$rootScope', '$scope', '$location', '$timeout', 'ariaNgCommonService', 'ariaNgLocalizationService', 'ariaNgLogService', 'ariaNgFileService', 'ariaNgSettingService', 'aria2TaskService', 'aria2SettingService', 'ariaNgConstants', function ($rootScope, $scope, $location, $timeout, ariaNgCommonService, ariaNgLocalizationService, ariaNgLogService, ariaNgFileService, ariaNgSettingService, aria2TaskService, aria2SettingService, ariaNgConstants) {
+    angular.module('ariaNg').controller('NewTaskController', ['$rootScope', '$scope', '$location', '$timeout', 'ariaNgCommonService', 'ariaNgLocalizationService', 'ariaNgLogService', 'ariaNgFileService', 'ariaNgSettingService', 'aria2TaskService', 'aria2SettingService', 'ariaNgConstants', 'ariaNgYoutubedlService', function ($rootScope, $scope, $location, $timeout, ariaNgCommonService, ariaNgLocalizationService, ariaNgLogService, ariaNgFileService, ariaNgSettingService, aria2TaskService, aria2SettingService, ariaNgConstants, ariaNgYoutubedlService) {
         var tabOrders = ['links', 'options'];
         var parameters = $location.search();
 
@@ -56,6 +56,35 @@
             return aria2TaskService.newMetalinkTask(task, pauseOnAdded, responseCallback);
         };
 
+        var downloadByYoutubelinks = function(pauseOnAdded, responseCallback){
+            var urls = ariaNgCommonService.parseUrlsFromOriginInput($scope.context.urls);
+            var options = angular.copy($scope.context.options);
+            var tasks = [];
+
+            if(!options.dir) {
+               options.dir = "/";
+            }
+            
+            if(!options.out) {
+                options.out = "Default";
+            }
+
+            for (var i = 0; i < urls.length; i++) {
+                if (urls[i] === '' || urls[i].trim() === '') {
+                    continue;
+                }
+
+                tasks.push({
+                    url: urls[i].trim(),
+                    options: options
+                });
+            }
+
+            saveDownloadPath(options);
+
+            return ariaNgYoutubedlService.startDownload(tasks, responseCallback);
+        }
+
         $scope.context = {
             currentTab: 'links',
             taskType: 'urls',
@@ -92,7 +121,6 @@
                     key: 'dir',
                     category: 'global',
                     canUpdate: 'new',
-                    readonly: $scope.readonly,
                     showHistory: true
                 },
                 {
@@ -215,6 +243,10 @@
             }, angular.element('#file-holder'));
         };
 
+        $scope.openYoutubeLinks = function() {
+            $scope.context.taskType = 'yotubeLinks';
+        }
+
         $scope.startDownload = function (pauseOnAdded) {
             var responseCallback = function (response) {
                 if (!response.hasSuccess && !response.success) {
@@ -246,6 +278,8 @@
                 $rootScope.loadPromise = downloadByTorrent(pauseOnAdded, responseCallback);
             } else if ($scope.context.taskType === 'metalink') {
                 $rootScope.loadPromise = downloadByMetalink(pauseOnAdded, responseCallback);
+            } else if ($scope.context.taskType === 'yotubeLinks') {
+                $rootScope.loadPromise = downloadByYoutubelinks(pauseOnAdded, responseCallback);
             }
         };
 
